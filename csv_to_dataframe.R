@@ -5,3 +5,5 @@ create_dataframe = function(datafile) {
   return(dataframe)
 }
 
+weathfile = "//Users//Erica//Desktop//Dropbox//Portal_EC//Hourly_PPT_mm_1989_present_fixed_date.csv"
+weathframe = create_dataframe(weathfile)
