@@ -1,0 +1,27 @@
+git config user.name "emchristensen"
+git config user.email "erica.christensen@weecology.org"
+git config -l					shows configuration
+
+git mkdir git_dir				make new directory
+cd git_dir						navigate to new directory
+git init 						initializes new dir to track changes
+
+git add filename.csv			adds file to stage
+git status						shows files ready for commit
+git reset						removes files from stage
+git commit -m "comment"			commits files from stage to local repository
+git log							shows all commits ever made
+
+git push						pushes from local repo to remote repo
+git pull						pulls from remote to local
+git clone						clone repository
+
+smartgit - interface for it that doesn't suck
+
+1)local directory  ->  2)stage ->  3)local repo  ->  4)remote repo
+
+1 -> 2  	git add [filename]
+2 -> 1		git reset
+2 -> 3		git commit [-m "comment"]
+3 -> 4		git push
+4 -> 3		git pull
