@@ -48,10 +48,10 @@ monthly_summary_from_daily = function(dataframe) {
 }
 
 
-weathfile = "C://Users//EC//Dropbox//Portal_EC//Hourly_PPT_mm_1989_present_fixed_date.csv"
+weathfile = "data/Hourly_PPT_mm_1989_present_fixed_withgaps.csv"
 weathframe = create_dataframe(weathfile)
 
-oldweathfile = "C://Users//EC//Dropbox//Portal_EC//Daily_weather_1980_89.csv"
+oldweathfile = "data/Daily_weather_1980_89.csv"
 oldwframe = create_dataframe(oldweathfile)
 
 monthly1 = monthly_summary_from_hourly(weathframe)
