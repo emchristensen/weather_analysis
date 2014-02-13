@@ -1,11 +1,7 @@
-create_dataframe = function(datafile) {
-  #converts data in csv file to data frame form
-  rawdata = read.csv(paste(datafile,sep=''),head=T,sep=',')
-  dataframe = data.frame(rawdata)
-  return(dataframe)
-}
+#load function for reading csv data
+source('csv_to_dataframe.r')
 
-winter_total = function(dataframe) {
+yearly_winter_precip = function(dataframe) {
   #sums precipitation for winter months (Dec-March), returns yearly total
   year= vector()
   ppt = vector()
@@ -20,8 +16,11 @@ winter_total = function(dataframe) {
     year = append(year,yr)
     ppt = append(ppt,sum(win_ppt))
   }
+  return(data.frame(year,ppt))
 }
 
 weathfile = "data/Monthly_ppt_1980_2013.csv"
-weathframe = create_dataframe(weathfile)
+weathframe = csv_to_dataframe(weathfile)
+
+winter_ppt = yearly_winter_precip(weathframe)
 
