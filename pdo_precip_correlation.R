@@ -1,9 +1,5 @@
-create_dataframe = function(datafile) {
-  #converts data in csv file to data frame form
-  rawdata = read.csv(paste(datafile,sep=''),head=T,sep=',')
-  dataframe = data.frame(rawdata)
-  return(dataframe)
-}
+#load function for reading csv data
+source('csv_to_dataframe.r')
 
 matrix_to_vector = function(dataframe) {
   #takes pdo data from matrix form to vector
@@ -43,13 +39,13 @@ temp_exploratory_plots = function(dataframe) {
 }
 
 weathfile = "data/Monthly_ppt_1980_2013.csv"
-weathframe = create_dataframe(weathfile)
+weathframe = csv_to_dataframe(weathfile)
 
-pdofile = "..//Dropbox//Portal_EC//weather//ENSO_PDO//pdo.csv"
-pdoframe = create_dataframe(pdofile)
+pdofile = "data/pdo.csv"
+pdoframe = csv_to_dataframe(pdofile)
 
-ensofile = "..//Dropbox//Portal_EC//weather//ENSO_PDO//enso.csv"
-ensoframe = create_dataframe(ensofile)
+ensofile = "data/enso.csv"
+ensoframe = csv_to_dataframe(ensofile)
 
 precip_exploratory_plots(weathframe)
 
