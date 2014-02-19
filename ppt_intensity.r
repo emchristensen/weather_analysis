@@ -43,7 +43,7 @@ weathframe = csv_to_dataframe(weathfile)
 weathframe$intensity[weathframe$Precipitation>7.6] = 3
 weathframe$intensity[weathframe$Precipitation<3.8] = 1
 
-highint_s = yearly_summer_precip(weathframe[weathframe$intensity==3,])
-lowint_s = yearly_summer_precip(weathframe[weathframe$intensity==1,])
+#highint_s = yearly_summer_precip(weathframe[weathframe$intensity==3,])
+#lowint_s = yearly_summer_precip(weathframe[weathframe$intensity==1,])
 highint_w = yearly_winter_precip(weathframe[weathframe$intensity==3,])
 lowint_w = yearly_winter_precip(weathframe[weathframe$intensity==1,])
