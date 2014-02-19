@@ -2,10 +2,10 @@
 # to Gutzler 2002
 
 #load function for reading csv data
-source('csv_to_dataframe.r')
+source('portal_weather/csv_to_dataframe.r')
 
 #run code to calculate yearly winter precipitation (Dec-March) from Portal
-source('yearly_winter_precip.r')
+source('portal_weather/yearly_winter_precip.r')
 
 matrix_to_vector = function(dataframe) {
   #takes pdo data from matrix form to vector
