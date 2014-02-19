@@ -25,10 +25,6 @@ matrix_to_vector = function(dataframe) {
   return(index_values)
 }
 
-
-weathfile = "data/Monthly_ppt_1980_2013.csv"
-weathframe = csv_to_dataframe(weathfile)
-
 pdofile = "data/pdo.csv"
 pdoframe = csv_to_dataframe(pdofile)
 
@@ -45,16 +41,23 @@ ppt.ts = ts(winter_ppt$ppt,start=c(1980),end=c(2012))
 enso.w = window(enso.ts,start=c(1980),end=c(2012))
 
 pptframe = data.frame(enso=as.vector(enso.w),ppt=as.vector(ppt.ts),year=1980:2012)
-plot(pptframe$enso,pptframe$ppt)
+plot(pptframe$enso,pptframe$ppt,xlab='ENSO index',ylab='Total Winter PPT')
 
 lowenso = pptframe[pptframe$enso<(-.5),]
 hienso = pptframe[pptframe$enso>.5,]
-points(lowenso$enso,lowenso$ppt,col=2)
-points(hienso$enso,hienso$ppt,col=3)
+points(lowenso$enso,lowenso$ppt,col=2,pch=16)
+points(hienso$enso,hienso$ppt,col=3,pch=16)
 
 model1 = lm(pptframe$ppt~pptframe$enso)
 summary(model1)
 
+#plot(pptframe$year,pptframe$enso,xlab='Year',ylab='ENSO index')
+#lines(pptframe$year,pptframe$enso)
+#abline(h=0,col=2)
+
+#plot(pptframe$year,pptframe$ppt,xlab='Year',ylab='Total Winter PPT')
+#lines(pptframe$year,pptframe$ppt)
+#abline(h=mean(pptframe$ppt),col=2)
 
 # Using Pdo to predict precipitation ------------------------------------
 pdoindex = matrix_to_vector(pdoframe)
