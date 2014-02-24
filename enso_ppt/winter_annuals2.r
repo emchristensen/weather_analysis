@@ -41,10 +41,10 @@ points(yearlyavgabund$Year,yearlyavgabund$x,col='red',pch=16)
 
 #plotting abundance vs precip -------------------------------------------------------------
 
-source('portal_weather/yearly_winter_precip.r')
+source('portal_weather/yearly_winter_precip.R')
 abundperquad3['nextyear'] = abundperquad3['Year']-1
 abundperquad4 = merge(abundperquad3,winter_ppt,by.x='nextyear',by.y='year')
-plot(abundperquad4$ppt,abundperquad4$x,xlab='Total Winter PPT',ylab='Avg Annual Abundance (stems/quadrat)')
+plot(abundperquad4$ppt,abundperquad4$x,xlab='Total Winter Precip',ylab='Plant Abundance')
 
 
 yearlyvariance = aggregate(abundperquad3$x,list(Year=abundperquad3$Year),FUN=var)

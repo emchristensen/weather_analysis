@@ -140,7 +140,6 @@ fall_rodents = aggregate(falldat$yr,by=list(falldat$yr),FUN=length)
 summer_rodents = aggregate(summdat$yr,by=list(summdat$yr),FUN=length)
 
 
-
 # Plots-------------------------------------------------------------------------
 plot(yearly_rodents$Group.1,yearly_rodents$x,xlab='',ylab='Total rodent abundance')
 plot(avg_yearly_rodents$Year[14:37],avg_yearly_rodents$x[14:37],xlab='',ylab='rodents/plot',col='red')
@@ -157,6 +156,11 @@ boxplot(recent_monthly$x~recent_monthly$Month,xlab = 'Month',ylab='Rodent abunda
 
 monthlyppt = csv_to_dataframe('data/Monthly_ppt_1980_2013.csv')
 OneYearPlot(monthly_rodents,monthlyppt,1990)
+
+recent_monthly = monthly_rodents[monthly_rodents$Year==2005,]
+recent_agg = aggregate(recent_monthly$x,by=list(Month=recent_monthly$Month),FUN=mean)
+plot(recent_agg$Month,recent_agg$x, xlab="Month", ylab="Rodent Abundance")
+lines(recent_agg$Month,recent_agg$x,col='red',lwd=2)
 
 # plot rodents vs plants and ppt------------------------------------------------------------
 #run parts of winter_annuals.R first
@@ -182,7 +186,9 @@ lines(avg_summer_rodents$Year[14:37],avg_summer_rodents$x[14:37],col='red',lwd=2
 spring_rodents_replicates = aggregate(springdat$yr,by=list(Year=springdat$yr,Plot=springdat$plot),FUN=length)
 avg_spring_rodents = aggregate(spring_rodents_replicates$x,by=list(Year = spring_rodents_replicates$Year),FUN=mean)
 plot(spring_rodents$Group.1,spring_rodents$x,xlab='')
-plot(avg_spring_rodents$Year[14:37],avg_spring_rodents$x[14:37],xlab='',ylab='rodent abundance')
+plot(avg_spring_rodents$Year,avg_spring_rodents$x,xlab='',ylab='Rodent Abundance')
+lines(avg_spring_rodents$Year,avg_spring_rodents$x,col='red',lwd=2)
+
 points(spring_rodents_replicates$Year,spring_rodents_replicates$x)
 lines(avg_spring_rodents$Year[14:37],avg_spring_rodents$x[14:37],col='red',lwd=2)
 
