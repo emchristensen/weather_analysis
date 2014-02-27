@@ -1,5 +1,5 @@
 #load function for reading csv data
-source('csv_to_dataframe.r')
+source('portal_weather/csv_to_dataframe.r')
 
 yearly_winter_precip = function(dataframe) {
   #sums precipitation for winter months (Dec-March), returns yearly total
@@ -19,7 +19,7 @@ yearly_winter_precip = function(dataframe) {
   return(data.frame(year,ppt))
 }
 
-weathfile = "data/Monthly_ppt_1980_2013.csv"
+weathfile = "data/Monthly_ppt_1980_2013_nona.csv"
 weathframe = csv_to_dataframe(weathfile)
 
 winter_ppt = yearly_winter_precip(weathframe)
