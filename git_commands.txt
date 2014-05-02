@@ -25,3 +25,13 @@ smartgit - interface for it that doesn't suck
 2 -> 3		git commit [-m "comment"]
 3 -> 4		git push
 4 -> 3		git pull
+
+
+connecting to a new repository:
+create repository on github.com
+create folder with same name on computer and navigate to said folder
+git init
+git add example.r (should already exist in folder)
+git commit -m 'first commit'
+git remote add origin https://githum.com/emchristensen/whatever.git
+git push -u origin master
