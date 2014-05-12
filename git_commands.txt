@@ -35,3 +35,6 @@ git add example.r (should already exist in folder)
 git commit -m 'first commit'
 git remote add origin https://githum.com/emchristensen/whatever.git
 git push -u origin master
+
+or just:
+git clone https://github.com/emchristensen/whatever.git
