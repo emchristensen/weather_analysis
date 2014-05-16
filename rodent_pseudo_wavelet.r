@@ -1,21 +1,62 @@
 #load function for reading csv data
 source('portal_weather/csv_to_dataframe.r')
+source('portal_weather/period_to_monthly_ts.r')
 
 library(TTR)
 
-rodentfile = 'data/Monthly_rodents.csv'
-rodentframe = csv_to_dataframe(rodentfile)
+# =================================================================================
+# import raw data
+# ---------------------------------------------------------------------------------
+dat = read.csv("data/Rodents.csv", as.is = TRUE,  colClasses = c(note1='character'))
+# There's a real species called NA, so make sure that the NAs are actually "NA"
+dat$species[is.na(dat$species)] = "NA"
+# just control plots
+dat = dat[dat$plot %in% c(1,2,4,8,9,11,12,14,17,22),]
 
-# creat time series ----------------------------------------------------------------
-rodents.ts = ts(rodentframe$x,start=c(1977,7),end=c(2014,2),freq=12)
+# ==================================================================================
+# convert raw database rodent file to regularly-spaced timeseries
+# ---------------------------------------------------------------------------------
 
-# fill in NAs
-rodents.ap = na.approx(rodents.ts)
+raw_to_ts = function(dat) {
+  # aggregate data by month.  there will be some NAs
+  dat_monthly = period_to_ts(dat)
+  
+  start = head(dat_monthly$date,1)
+  end = tail(dat_monthly$date,1)
+  rodents.ts = ts(dat_monthly$x,
+                  start=c(as.integer(format(start,'%Y')),as.integer(format(start,'%m'))),
+                  end=c(as.integer(format(end,'%Y')),as.integer(format(end,'%m'))),
+                  freq=12)
+  
+  # fill in NAs
+  rodents.ap = na.approx(rodents.ts)
+  return(rodents.ap)
+}
 
-# smoothing ----------------------------------------------------------------------
-rodents.smooth = SMA(rodents.ap,3*12)
-plot(rodents.smooth,xlab='',ylab='rodent abundance',main='n=3*12')
+# ================================================================================
+# create timeseries for subsets of rodent data
+rodents.ap = raw_to_ts(dat)
+pp.ap = raw_to_ts(dat[dat$species == 'PP',])
+dm.ap = raw_to_ts(dat[dat$species == 'DM',])
 
+# ================================================================================
+# smoothing plots
+smoothfactor = 12
+
+rodents.smooth = SMA(rodents.ap,smoothfactor)
+plot(rodents.smooth,xlab='',ylab='rodent abundance',main=paste('n =',smoothfactor))
+
+pp.smooth = SMA(pp.ap,smoothfactor)
+plot(pp.smooth,xlab='',ylab='PP abundance',main=paste('n =',smoothfactor))
+
+dm.smooth = SMA(dm.ap,smoothfactor)
+plot(dm.smooth,xlab='',ylab='DM abundance',main=paste('n =',smoothfactor))
+
+# decompose ---------------------------------------------------------------------
+rodents.decom = decompose(rodents.ap)
+plot(rodents.decom)
+rodents.hw = HoltWinters(rodents.ap)
+plot(rodents.hw$fitted)
 
 # correlating to weather -------------------------------------------------------
 weathfile = "data/Monthly_ppt_1980_present_patched.csv"
