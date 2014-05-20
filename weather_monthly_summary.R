@@ -1,9 +1,6 @@
-create_dataframe = function(datafile) {
-  #converts data in csv file to data frame form
-  rawdata = read.csv(paste(datafile,sep=''),head=T,sep=',')
-  dataframe = data.frame(rawdata)
-  return(dataframe)
-}
+#load function for reading csv data
+source('portal_weather/csv_to_dataframe.r')
+
 
 monthly_summary_from_hourly = function(dataframe) {
   #takes hourly data from portal (1989-present) and produces monthly total and monthly avg
@@ -38,7 +35,7 @@ monthly_summary_from_daily = function(dataframe) {
   month = sumprecip$Group.1
   year = sumprecip$Group.2
   sumprecip = sumprecip$x*10    #1980-1989 data taken in cm
-  meanprecip = meanprecip$x*10
+  meanprecip = meanprecip$x*10/24 #convert from mm/day to mm/hr
   #meantemp = meantemp$x
   maxtemp = maxtemp$x
   mintemp = mintemp$x
@@ -60,10 +57,10 @@ combine_two_datasets = function(dataframe1,dataframe2) {
 }
 
 weathfile = "data/Hourly_PPT_mm_1989_present_fixed_withgaps.csv"
-weathframe = create_dataframe(weathfile)
+weathframe = csv_to_dataframe(weathfile)
 
 oldweathfile = "data/Daily_weather_1980_89.csv"
-oldwframe = create_dataframe(oldweathfile)
+oldwframe = csv_to_dataframe(oldweathfile)
 
 monthly1 = monthly_summary_from_daily(oldwframe)
 monthly2 = monthly_summary_from_hourly(weathframe)
@@ -72,5 +69,5 @@ monthly1 = monthly1[1:113,] #remove last two entries so two halves of series mat
 
 monthly = combine_two_datasets(monthly1,monthly2)
 
-outfile = "data/Monthly_ppt_1980_2013.csv"
+outfile = "data/Monthly_ppt_1980_present.csv"
 write.csv(monthly,file=outfile,row.names=F)
