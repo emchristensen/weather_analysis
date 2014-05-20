@@ -12,7 +12,7 @@ ensoframe = csv_to_dataframe(ensofile)
 
 enso.vec = as.vector(t(ensoframe[,c(2,3,4,5,6,7,8,9,10,11,12,13)]))
 enso.ts = ts(enso.vec,start=c(1950,1),end=c(2013,6),freq=12)
-enso.w = window(enso.ts,start=c(1979,11),end=c(2013,6))
+enso.w = window(enso.ts,start=c(1979,12),end=c(2013,6))
 
 # ==================================================================================
 # sine model
@@ -67,7 +67,7 @@ mmean = c(mean(jan,na.rm=T),
 
 seasonal = rep(mmean,34)
 
-seasonal.lm = lm(precip[1:408]~Time[1:408]+seasonal)
+seasonal.lm = lm(precip[1:408]~Time[1:408]+seasonal[1:408])
 plot(precip)
 lines(fitted(seasonal.lm),col='red')
 summary(seasonal.lm)
