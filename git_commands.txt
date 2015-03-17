@@ -1,6 +1,7 @@
-git config user.name "emchristensen"
-git config user.email "erica.christensen@weecology.org"
-git config -l					shows configuration
+git config --global user.name "emchristensen"
+git config --global user.email "erica.christensen@weecology.org"
+git config --global core.editor "nano"		sets default text editor
+git config -list				shows configuration
 
 git mkdir git_dir				make new directory
 cd git_dir						navigate to new directory
