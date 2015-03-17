@@ -29,6 +29,21 @@ AggregateByYear = function(dat) {
   return(yearly_rodents)
 }
 
+AggregateByPeriod = function(dat) {
+  #this function calculates total rodent abundance (avg per plot) per sampling period (month)
+  empties = dat[dat$note1 == '2',c(4,5,6)]
+  empties$x = rep(0,length(empties$yr))
+  nonempteis = dat[dat$note1 != '2',]
+  rodents_plots = aggregate(nonempties$yr,
+                            by=list(yr=nonempties$yr,plot=nonempties$plot,period=nonempties$period),
+                            FUN=length)
+  yearly_rodents_plots = rbind(empties,rodents_plots)
+  monthly_rodents = aggregate(yearly_rodents_plots$x,
+                              by=list(period = yearly_rodents_plots$period),
+                              FUN=mean)
+  return(monthly_rodents)
+}
+
 # read and clean raw data ------------------------------------------------------------------------
 dat = read.csv("data/Rodents1977_2014.csv", as.is = TRUE,  colClasses = c(note1='character'))
 
@@ -57,5 +72,7 @@ dat = dat[dat$period > 0, ]
 
 #aggregate data --------------------------------------------------------------
 yearly_rodents = AggregateByYear(dat)
+
+monthly_rodents = AggregateByPeriod(dat)
 
 summer_rodents = SeasonalAvg(dat,c(4,5,6,7,8,9))

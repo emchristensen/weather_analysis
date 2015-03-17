@@ -63,7 +63,7 @@ summary(reg1)
 
 #taking intensity of precip into account -----------------------------------------------------
 
-source('portal_weather/pt_intensity.r')
+source('portal_weather/ppt_intensity.r')
 plot(lowint_w$ppt[1:22],yearlyavgabund$x[11:32],xlab='total winter precip <3.8mm/hr',ylab='avg annual abund (stems/quadrat)')
 reg = lm(yearlyavgabund$x[11:32]~lowint_w$ppt[1:22])
 abline(reg,col='red')
