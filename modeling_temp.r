@@ -1,14 +1,11 @@
-#load function for reading csv data
-source('portal_weather/csv_to_dataframe.r')
+# This script is a sine model for max and min monthly temp
+
 
 library(TTR)
-library(zoo)
 
-weathfile = "data/Monthly_ppt_1980_present_patched.csv"
-weathframe = csv_to_dataframe(weathfile)
+weathfile = read.csv("data/Monthly_ppt_1980_present_patched.csv")
 
-ensofile = "data/enso.csv"
-ensoframe = csv_to_dataframe(ensofile)
+ensofile = read.csv("data/enso.csv")
 
 enso.vec = as.vector(t(ensoframe[,c(2,3,4,5,6,7,8,9,10,11,12,13)]))
 enso.ts = ts(enso.vec,start=c(1950,1),end=c(2013,6),freq=12)
@@ -36,7 +33,7 @@ plot(mintemp)
 lines(fitmin,col='red')
 
 # ===============================================================================
-# do stuff with the residuals
+# examine the residuals
 residmax = resid(maxt.lm)
 plot(residmax)
 lines(residmax)
