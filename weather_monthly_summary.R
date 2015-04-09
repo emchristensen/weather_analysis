@@ -1,73 +1,54 @@
-#load function for reading csv data
-source('portal_weather/csv_to_dataframe.r')
+# This script takes daily weather data summarized from original files and writes a new file of monthly 
+# total and mean precip, and max and min temp.
+# Written by EMC 8/7/14
+#
+# Input:
+#   Daily_weather_1980_present_fixed_withgaps.csv
+#       Year, Month, Day, Precipitation, TempAirMax,TempAirMin
+#
+# Output:
+#     Monthly_ppt_1980_present.csv
+#         year, month, sumprecip, maxtemp, mintemp
+#
+# Scripts called:
+#     find_gaps_weather_data.r    creates input file Hourly_PPT_mm_1989_present_fixed_withgaps.csv
+#     weather_daily_summary.r     combines hourly dataset (1989-present) and daily dataset (1980-89)
+  
 
+# set working directory and run prelim scripts
+setwd('C:/Users/EC/git_dir/')
+source('portal_weather/weather_daily_summary.r')
 
-monthly_summary_from_hourly = function(dataframe) {
-  #takes hourly data from portal (1989-present) and produces monthly total and monthly avg
+#####################################################################################################
+# Define functions
+#####################################################################################################
+
+monthly_summary_from_daily = function(dataframe) {
+  #takes hourly daily from portal and produces monthly total/avg
   sumprecip = aggregate(dataframe$Precipitation,by=list(dataframe$Month,dataframe$Year),FUN=sum)
-  meanprecip = aggregate(dataframe$Precipitation,by=list(dataframe$Month,dataframe$Year),FUN=mean)
-  #meantemp = aggregate(dataframe$TempAir,by=list(dataframe$Month,dataframe$Year),FUN=mean)
-  maxtemp = aggregate(dataframe$TempAir,by=list(dataframe$Month,dataframe$Year),FUN=max)
-  mintemp = aggregate(dataframe$TempAir,by=list(dataframe$Month,dataframe$Year),FUN=min)
-  #meanhumid = aggregate(dataframe$RelHumid,by=list(dataframe$Month,dataframe$Year),FUN=mean)
+  maxtemp = aggregate(dataframe$TempAirMax,by=list(dataframe$Month,dataframe$Year),FUN=max)
+  mintemp = aggregate(dataframe$TempAirMin,by=list(dataframe$Month,dataframe$Year),FUN=min)
   
   month = sumprecip$Group.1
   year = sumprecip$Group.2
   sumprecip = sumprecip$x
-  meanprecip = meanprecip$x
-  #meantemp = meantemp$x
   maxtemp = maxtemp$x
   mintemp = mintemp$x
-  #meanhumid = meanhumid$x
   
-  return(data.frame(month,year,sumprecip,meanprecip,maxtemp,mintemp))
+  return(data.frame(year,month,sumprecip,maxtemp,mintemp))
 }
 
-monthly_summary_from_daily = function(dataframe) {
-  #takes hourly daily from portal (1980-1989) and produces monthly total and monthly avg
-  sumprecip = aggregate(dataframe$Precipitation,by=list(dataframe$Month,dataframe$Year),FUN=sum)
-  meanprecip = aggregate(dataframe$Precipitation,by=list(dataframe$Month,dataframe$Year),FUN=mean)
-  #meantemp = aggregate(dataframe$TempAir,by=list(dataframe$Month,dataframe$Year),FUN=mean)
-  maxtemp = aggregate(dataframe$TempAirMax,by=list(dataframe$Month,dataframe$Year),FUN=max)
-  mintemp = aggregate(dataframe$TempAirMin,by=list(dataframe$Month,dataframe$Year),FUN=min)
-  #meanhumid = aggregate(dataframe$RelHumid,by=list(dataframe$Month,dataframe$Year),FUN=mean)
-  
-  month = sumprecip$Group.1
-  year = sumprecip$Group.2
-  sumprecip = sumprecip$x*10    #1980-1989 data taken in cm
-  meanprecip = meanprecip$x*10/24 #convert from mm/day to mm/hr
-  #meantemp = meantemp$x
-  maxtemp = maxtemp$x
-  mintemp = mintemp$x
-  #meanhumid = meanhumid$x
-  
-  return(data.frame(month,year,sumprecip,meanprecip,maxtemp,mintemp))
-}
+###############################################################################################
+# Read in files and run functions
+###############################################################################################
 
-combine_two_datasets = function(dataframe1,dataframe2) {
-  #combines the two monthly-summary data sets into one
-  year = c(dataframe1$year,dataframe2$year)
-  month = c(dataframe1$month,dataframe2$month)
-  sumprecip = c(dataframe1$sumprecip,dataframe2$sumprecip)
-  meanprecip = c(dataframe1$meanprecip,dataframe2$meanprecip)
-  maxtemp = c(dataframe1$maxtemp,dataframe2$maxtemp)
-  mintemp = c(dataframe1$mintemp,dataframe2$mintemp)
-  
-  return(data.frame(year,month,sumprecip,meanprecip,maxtemp,mintemp))
-}
+daily = read.csv('data/Daily_weather_1980_present_fixed_withgaps.csv')
 
-weathfile = "data/Hourly_PPT_mm_1989_present_fixed_withgaps.csv"
-weathframe = csv_to_dataframe(weathfile)
+# monthly summary
+monthly = monthly_summary_from_daily(daily)
 
-oldweathfile = "data/Daily_weather_1980_89.csv"
-oldwframe = csv_to_dataframe(oldweathfile)
+# write to csv file
+write.csv(monthly,file="data/Monthly_ppt_1980_present.csv",row.names=F)
 
-monthly1 = monthly_summary_from_daily(oldwframe)
-monthly2 = monthly_summary_from_hourly(weathframe)
-
-monthly1 = monthly1[1:113,] #remove last two entries so two halves of series match up
-
-monthly = combine_two_datasets(monthly1,monthly2)
-
-outfile = "data/Monthly_ppt_1980_present.csv"
-write.csv(monthly,file=outfile,row.names=F)
+# Clear workspace
+rm(list=ls())
