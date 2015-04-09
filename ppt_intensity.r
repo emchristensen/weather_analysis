@@ -1,5 +1,6 @@
-#load function for reading csv data
-source('csv_to_dataframe.r')
+# Scripts for looking at the intensity of ppt in the weather data
+
+
 
 yearly_summer_precip = function(dataframe) {
   #sums precipitation for summer months (June-Sept), returns yearly total
@@ -37,8 +38,7 @@ yearly_winter_precip = function(dataframe) {
   return(data.frame(year,ppt))
 }
 
-weathfile = "data/Hourly_PPT_mm_1989_present_fixed.csv"
-weathframe = csv_to_dataframe(weathfile)
+weathframe = read.csv("data/Hourly_PPT_mm_1989_present_fixed.csv")
 
 weathframe$intensity[weathframe$Precipitation>7.6] = 3
 weathframe$intensity[weathframe$Precipitation<3.8] = 1
