@@ -1,64 +1,68 @@
-#load function for reading csv data
-source('portal_weather/csv_to_dataframe.r')
+# This script takes  the newer weather station data (Hourly_PPT_mm_1989_present_fixed.csv) 
+# and writes a new file with NAs added where the weather station is missing data points.
+# Written by EMC 8/13/14
+#
+# Input:
+#   Hourly_PPT_mm_1989_present_fixed.csv
+#       Year, Month, Day, Hour, TempAir, RelHumid, TempSoil, Precipitation, Uncert_level
+#       This data has been altered from the original to correct the timestamp error that occurred in 1997: see the document 1997 temp problem for more info
+#       Make sure you are using the most updated version of this file!
+#
+# Output:
+#   Hourly_PPT_mm_1989_present_fixed_withgaps.csv
+#       Year, Month, Day, Hour, TempAir, RelHumid, TempSoil, Precipitation, Uncert_level
+#
+# Scripts called:
+#    
+# 
 
-create_missingframe = function(missingdates) {
-  # this function creates a dataframe of the dates for which weather data is missing, with NA for weather data
-  
-  TempAir = rep(NA,length(missingdates))
-  RelHumid = rep(NA,length(missingdates))
-  TempSoil = rep(NA,length(missingdates))
-  Precipitation = rep(NA,length(missingdates))
-  Uncert_level = rep(1,length(missingdates))
-  
-  dates = as.Date(missingdates)
-  hr = as.integer(format(missingdates,'%H'))
-  Hour = hr*100
-  midnight = Hour==0
-  Hour[midnight] = 2400
-  dates[midnight] = dates[midnight]-1
-  
-  Year = as.integer(format(dates, '%Y'))
-  Month = as.integer(format(dates, '%m'))
-  Day = as.integer(format(dates, '%d'))
-  
-  missingframe = data.frame(Year,Month,Day,Hour,TempAir,RelHumid,TempSoil,Precipitation,Uncert_level)
-  return(missingframe)
-}
 
-find_missing_dates = function(weathframe) {
-  # this function finds gaps in hourly ppt data
+########################################################################################
+# main function
+########################################################################################
+find_gaps_weather_data = function(weathfile) {
+  # function to find gaps in latest version of hourly data and fill gaps with NAs
+  weathframe = read.csv(weathfile)
+  
+  # finds gaps in hourly ppt data
   date_info = with(weathframe,paste(Year, Month, Day, Hour/100))
   dates = strptime(date_info, '%Y %m %d %H')
   d1 = dates[1]
   d2 = dates[length(dates)]
   datesthereshouldbe = as.character(seq(d1,d2,by='hour'))
   missingdates = setdiff(datesthereshouldbe,as.character(dates))
-  return(missingdates)
-}
-
-combine_two_frames = function(weathframe,missingframe) {
-  #combines the dataframe of weather data with the dataframe of missing weather data
-  Year = c(weathframe$Year,missingframe$Year)
-  Month = c(weathframe$Month,missingframe$Month)
-  Day = c(weathframe$Day,missingframe$Day)
-  Hour = c(weathframe$Hour,missingframe$Hour)
-  TempAir = c(weathframe$TempAir,missingframe$TempAir)
-  RelHumid = c(weathframe$RelHumid,missingframe$RelHumid)
-  TempSoil = c(weathframe$TempSoil,missingframe$TempSoil)
-  Precipitation = c(weathframe$Precipitation,missingframe$Precipitation)
+  missingdates = strptime(missingdates,'%Y-%m-%d %H:%M:%S')
   
-  withgaps = data.frame(Year,Month,Day,Hour,TempAir,RelHumid,TempSoil,Precipitation)
+  # create a dataframe of the hours for which weather data is missing, with NA for weather data
+  TempAir = rep(NA,length(missingdates))
+  RelHumid = rep(NA,length(missingdates))
+  TempSoil = rep(NA,length(missingdates))
+  Precipitation = rep(NA,length(missingdates))
+  Uncert_level = rep(1,length(missingdates))
+  
+  mdates = as.Date(missingdates)
+  hr = as.integer(format(missingdates,'%H'))
+  Hour = hr*100
+  midnight = Hour==0
+  Hour[midnight] = 2400
+  mdates[midnight] = mdates[midnight]-1
+  
+  Year = as.integer(format(mdates, '%Y'))
+  Month = as.integer(format(mdates, '%m'))
+  Day = as.integer(format(mdates, '%d'))
+  
+  missingframe = data.frame(Year,Month,Day,Hour,TempAir,RelHumid,TempSoil,Precipitation,Uncert_level)
+  
+  #combine the dataframe of weather data with the dataframe of missing weather data
+  withgaps = rbind(weathframe,missingframe)
+  
   return(withgaps[order(withgaps[,1],withgaps[,2],withgaps[,3],withgaps[,4]),])
 }
 
-weathfile = "data/Hourly_PPT_mm_1989_present_fixed.csv"
-weathframe = csv_to_dataframe(weathfile)
+hourly_withgaps = find_gaps_weather_data('data/Hourly_PPT_mm_1989_present_fixed.csv')
 
-missingdates = find_missing_dates(weathframe)
+write.csv(hourly_withgaps,file="data/Hourly_PPT_mm_1989_present_fixed_withgaps.csv",row.names=F)
 
-missingframe = create_missingframe(strptime(missingdates,'%Y-%m-%d %H:%M:%S'))
+# Clear workspace
+rm(list=ls())
 
-withgaps = combine_two_frames(weathframe,missingframe)
-
-outfile = "data/Hourly_PPT_mm_1989_present_fixed_withgaps.csv"
-write.csv(withgaps,file=outfile,row.names=F)
