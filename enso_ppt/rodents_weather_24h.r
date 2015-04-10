@@ -1,9 +1,9 @@
 #load function for reading csv data
 source('portal_weather/csv_to_dataframe.r')
-
+source('data/period_dates.r')
 
 # read and clean raw rodent data ------------------------------------------------------------------------
-dat = read.csv("data/Rodents1977_2014.csv", as.is = TRUE,  colClasses = c(note1='character'))
+dat = read.csv("data/Rodents.csv", as.is = TRUE,  colClasses = c(note1='character'))
 
 # There's a real species called NA, so make sure that the NAs are actually "NA"
 dat$species[is.na(dat$species)] = "NA"
@@ -12,9 +12,10 @@ dat$species[is.na(dat$species)] = "NA"
 dat = dat[dat$plot %in% c(1,2,4,8,9,11,12,14,17,22),]
 
 # Only select rodent species
-dat = dat[dat$species %in% c('AH','BA','DM','DO','DS','DX','NA','NX','OL','OT','OX','PB',
-                             'PE','PF','PH','PI','PL','PM','PP','PX','RF','RM','RO','RX',
-                             'SF','SH','SO','SS','ST','SX','UR',''),]
+dat = dat[dat$species %in% c('PP'),]
+#dat = dat[dat$species %in% c('AH','BA','DM','DO','DS','DX','NA','NX','OL','OT','OX','PB',
+#                             'PE','PF','PH','PI','PL','PM','PP','PX','RF','RM','RO','RX',
+#                             'SF','SH','SO','SS','ST','SX','UR',''),]
 
 #remove problematic entries as indicated by 'note1' column
 #     4 = plot not trapped
@@ -31,7 +32,8 @@ dat = dat[dat$period > 0, ]
 # remove entries with no mass measurement
 dat = dat[!is.na(dat$wgt),]
 
-# Compute rodent abundance and mean mass for each day of trapping -----------------------------
+# ============================================================================================
+# Compute rodent abundance and mean mass for each day of trapping
 dat$date = as.Date(paste(dat$yr,dat$mo,dat$dy,sep='-'))
 daily_rodents = aggregate(dat$Record_ID,by=list(date=dat$date),FUN=length)
 meanmass = aggregate(dat$wgt,by=list(date=dat$date),FUN=mean)
@@ -66,7 +68,7 @@ daily_rodents = daily_rodents[daily_rodents$date %in% nightly_weather$date,]
 
 rodents_weather = merge(daily_rodents,nightly_weather,by='date')
 
-plot(rodents_weather$x.y,rodents_weather$x.x,xlab='mean temp',ylab='rodent abundance')
+plot(rodents_weather$x.y,rodents_weather$x.x,xlab='mean temp',ylab='PP abundance')
 plot(rodents_weather$x.y,rodents_weather$meanmass,xlab='mean temp',ylab='mean rodent mass')
 plot(rodents_weather$ppt,rodents_weather$x.x,xlab='total precip',ylab='rodent abundance')
 plot(rodents_weather$ppt,rodents_weather$meanmass,xlab='total precip',ylab='mean rodent mass')
@@ -76,7 +78,7 @@ plot(rodents_weather$TempSoil,rodents_weather$x.x,xlab='soil temp',ylab='rodent 
 plot(rodents_weather$TempSoil,rodents_weather$meanmass,xlab='soil temp',ylab='mean rodent mass')
 
 boxplot(rodents_weather$meanmass~rodents_weather$ppt_bin)
-boxplot(rodents_weather$x.x~rodents_weather$ppt_bin)
+boxplot(rodents_weather$x.x~rodents_weather$ppt_bin,xlab='rain/no rain',ylab='abundance')
 
 # models ------------------------------------------------------------------------------------------
 model1 = lm(rodents_weather$x.x~rodents_weather$x.y+rodents_weather$ppt+rodents_weather$RelHumid)
