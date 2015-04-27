@@ -59,7 +59,7 @@ find_gaps_weather_data = function(weathfile) {
   return(withgaps[order(withgaps[,1],withgaps[,2],withgaps[,3],withgaps[,4]),])
 }
 
-hourly_withgaps = find_gaps_weather_data('data/Hourly_PPT_mm_1989_present_fixed.csv')
+hourly_withgaps = find_gaps_weather_data('data/original_data/Hourly_PPT_mm_1989_present_fixed.csv')
 
 write.csv(hourly_withgaps,file="data/Hourly_PPT_mm_1989_present_fixed_withgaps.csv",row.names=F)
 
