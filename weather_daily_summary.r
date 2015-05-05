@@ -18,7 +18,7 @@
 
 source('weather_analysis/find_gaps_weather_data.r')
 
-oldwfile = 'C:/Users/EC/git_dir/original_data/Daily_weather_1980_89.csv'
+oldwfile = 'C:/Users/EC/git_dir/data/original_data/Daily_weather_1980_89.csv'
 newwfile = 'C:/Users/EC/git_dir/data/Hourly_PPT_mm_1989_present_fixed_withgaps.csv'
 
 # ===========================================================================================
